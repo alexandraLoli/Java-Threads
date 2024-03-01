@@ -1,0 +1,29 @@
+
+MyDispacher
+    - void addTask(Task task)   - asignează un task unui nod, in funcție de algoritmul după care funcționează Dispacther-ul:
+        - ROUND_ROBIN - task-ul este trimis nodului cu id-ul (i + 1) % n, unde i - ultimul nod accesat și n - numărul
+                        total de noduri;
+        - SHORTEST_QUEUE - task-ul este trimis nodului care are cele mai puține task-uri în coada / execuție. Pentru
+                            a afla id-ul acestui nod, și pentru a eficiantiza totodată execuția programului ca timp,
+                            am folosit un PriorityQueue care sortează nodulurile în funcție de dimenziunea cozii;
+        - SIZE_INTERVAL_TASK_ASSIGNMENT - există 3 noduri, fiecare din ele primind un anumit tip de task, în funcție
+                                          de dimensiunea sa;
+        - LEAST_WORK_LEFT - task-ul este trimis nodului care este cel mai ”liber” ca timp de execuție. Pentru
+                            a afla id-ul acestui nod, și pentru a eficiantiza totodată execuția programului ca timp,
+                            am folosit un PriorityQueue care sortează nodulurile în funcție de durata totală a calculelor
+                            care au rămas de executat;
+                                - această metodă este marcată ca sychronized pentru a evita race conditions atunci când mai multe
+                         generatoare trimit task-uri în același timp Dispatcher-ului.
+
+MyHost
+
+    - run() - pentru început avem un while care blochează metoda până când nodul primește un prim task;
+            - ulterior, cât timp nodul nu este oprit, este extras primul task din coadă și începe a fi executat; dacă
+            apar întreruperi, se verifică timpul pe care îl mai are de executat, se actualizează variabila left, iar
+            task-ul este readăugat în coadă;
+    - addTask(task) - am folosit un PriorityBlockingQueue care sortează task-urile după prioritate și după ID;
+                    - când funcția este apelată de Dispatcher, adaugă un nod în coadă. În cazul în care task-ul curent aflat
+                    în execuție este preemtibil, și cel venit nou are prioritatea mai mare, execuția task-ului este întreruptă;
+    - getQueueSize() - returnează dimensiunea cozii + 1 (daca se află un task în execuție);
+    - getWorkLeft() - adună durata fiecărui task din coadă și timpul pe care îl mai are de executat task-ul curent;
+    - shutdown() - valoarea variabilei ”shut” devine true, lucru care duce la întreruperea while-ului din run().
